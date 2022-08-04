@@ -1,0 +1,3 @@
+[submodule "aratanda-web"]
+	path = aratanda-web
+	url = https://github.com/karbafoo/Aratanda/aratanda-web
