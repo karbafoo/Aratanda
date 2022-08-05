@@ -1,23 +1,31 @@
 import { colors } from "@mui/material";
 import { Box } from "@mui/system";
 import React from "react";
+import { NFTAdder } from "../components/NFTAdder";
 import { NFTLoader } from "../components/NFTLoader";
 import { useGetCollectionNFTs } from "../hooks/Zora";
+import { COLORS } from "../util/Colors";
 import { getIPFS } from "../util/IPFS";
 export const MixerScreen = () => {
     const [channels, setChannels] = React.useState([[], [], [], []]);
-    const [dNFT, setdNFT] = React.useState<number | null>(null);
+    const [dNFT, setdNFT] = React.useState<ZoraNFT | null>(null);
+    const [dsNFT, setdsNFT] = React.useState<ZoraNFT | null>(null);
 
     const onNFTDrop = (i: number) => {
-        console.log("onNFTDrop", i);
+        console.log("onNFTDrop", i, dNFT);
+        setdsNFT(dNFT);
     };
-    const onNFTDragStart = (i: number) => {
+    const onNFTDragStart = (i: ZoraNFT) => {
         setdNFT(i);
         console.log("onNFTDragStart", i);
     };
     const onNFTDragEnd = () => {
         console.log("onNFTDragEnd", null);
         setdNFT(null);
+    };
+
+    const onCloseAdder = () => {
+        setdsNFT(null);
     };
     return (
         <div
@@ -75,6 +83,7 @@ export const MixerScreen = () => {
                     />
                 ))}
             </div>
+            <NFTAdder nft={dsNFT} onClose={onCloseAdder} />
         </div>
     );
 };
@@ -183,8 +192,8 @@ const NFTSelect = ({
     onNFTDragStart,
     onNFTDragEnd,
 }: {
-    onNFTDragStart: (i: number) => void;
-    onNFTDragEnd: (i: number) => void;
+    onNFTDragStart: (i: ZoraNFT) => void;
+    onNFTDragEnd: (i: ZoraNFT) => void;
 }) => {
     const [loaderOpen, setLoaderOpen] = React.useState(false);
     const [activeAddress, setActiveAddress] = React.useState(
@@ -199,6 +208,12 @@ const NFTSelect = ({
     };
     const onLoaderClose = () => {
         setLoaderOpen(false);
+    };
+
+    const isActive = (addr: string) => {
+        return addr === activeAddress
+            ? { backgroundColor: COLORS.PINK, borderBottom: "none", zIndex: 8 }
+            : { backgroundColor: COLORS.GREY };
     };
     return (
         <div
@@ -215,19 +230,46 @@ const NFTSelect = ({
                     display: "flex",
                     width: "100%",
                     padding: 8,
-                    border: "1px solid black",
+                    borderBottom: "1px solid black",
+                    backgroundColor: COLORS.PURPLE,
                 }}
             >
-                <h3 style={{ fontSize: 14, flex: 1, textAlign: "left" }}>
+                <h3
+                    style={{
+                        fontSize: 14,
+                        flex: 1,
+                        textAlign: "left",
+                        color: "white",
+                    }}
+                >
                     NFT Select
                 </h3>
                 <button onClick={onLoaderOpen}>ADD</button>
             </div>
-            <div style={{ display: "flex", width: "100%" }}>
-                <TabItem address="0x5F4849089942618b6c64A0459a1D764Dc43BfcD7" />
+            <div
+                style={{
+                    display: "flex",
+                    width: "100%",
+                    backgroundColor: COLORS.PINK,
+                    borderBottom: "1px solid black",
+                }}
+            >
+                <TabItem
+                    address="0xbc4ca0eda7647a8ab7c2061c2e118a18a936f13d"
+                    style={{
+                        ...isActive(
+                            "0xbc4ca0eda7647a8ab7c2061c2e118a18a936f13d"
+                        ),
+                    }}
+                />
                 <TabItem
                     address="0x5F4849089942618b6c64A0459a1D764Dc43BfcD7"
-                    style={{ marginLeft: -18 }}
+                    style={{
+                        marginLeft: -12,
+                        ...isActive(
+                            "0x5F4849089942618b6c64A0459a1D764Dc43BfcD7"
+                        ),
+                    }}
                 />
             </div>
 
@@ -239,15 +281,15 @@ const NFTSelect = ({
                     overflow: "auto",
                     flex: 1,
                     width: "100%",
-                    backgroundColor: "yellow",
+                    backgroundColor: COLORS.PINK,
                 }}
             >
                 {nfts.map((n, i) => (
                     <NFT
                         key={"nft" + i}
                         data={n}
-                        onNFTDragStart={() => onNFTDragStart(0)}
-                        onNFTDragEnd={() => onNFTDragEnd(0)}
+                        onNFTDragStart={() => onNFTDragStart(n)}
+                        onNFTDragEnd={() => onNFTDragEnd(n)}
                     />
                 ))}
             </div>
@@ -279,9 +321,11 @@ const NFT = ({
                 width: "5rem",
                 minWidth: "5rem",
                 height: "5rem",
-                border: "1px solid cyan",
+                border: " 1px solid white",
                 backgroundColor: "grey",
                 cursor: "pointer",
+                position: "relative",
+                boxShadow: "1px 1px 4px 1px black",
             }}
             onDragStart={onDragStart}
             onDragEnd={onDragEnd}
@@ -291,6 +335,24 @@ const NFT = ({
                 src={getIPFS(data.image)}
                 style={{ width: "100%", objectFit: "contain" }}
             />
+            <span
+                style={{
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    padding: "0.1rem",
+                    paddingRight: "0.375rem",
+                    boxShadow: "1px 1px 2px 0 black",
+                    backgroundColor: "crimson",
+                    color: "white",
+                    border: " 1px solid white",
+                    fontSize: "0.5rem",
+                    borderBottomRightRadius: "1rem",
+                    textAlign: "left",
+                }}
+            >
+                {data?.tokenId || ""}
+            </span>
         </div>
     );
 };

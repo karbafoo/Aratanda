@@ -1,10 +1,25 @@
+@font-face {
+    font-family: "IPixelU";
+    src: local("IPixelU"), url(./assets/fonts/I-pixel-u.ttf) format("truetype");
+    /* other formats include: 'woff2', 'truetype, 'opentype',
+                              'embedded-opentype', and 'svg' */
+}
+@font-face {
+    font-family: "PressStart2P";
+    src: local("PressStart2P"),
+        url(./assets/fonts/PressStart2P.ttf) format("truetype");
+    /* other formats include: 'woff2', 'truetype, 'opentype',
+                              'embedded-opentype', and 'svg' */
+}
+
 body,
 html {
     height: 100vh;
-    font-size: calc(0.69rem + 1vmin);
+    font-size: calc(0.4rem + 1vmin);
 }
 * {
     box-sizing: border-box;
+    font-family: PressStart2P;
 }
 #root {
     height: 100%;
@@ -19,19 +34,30 @@ html {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    font-size: 10px;
-    background-color: lightcoral;
-    width: 3rem;
+    font-size: 8px;
+    width: 5rem;
     padding: 4px;
     color: white;
     border: 1px solid white;
     border-top-right-radius: 2rem;
     cursor: pointer;
     &:hover {
-        background-color: crimson !important;
+        background-color: purple !important;
         z-index: 10;
     }
 }
 
-.channel {
+.d-flex {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &.start {
+        justify-content: start;
+    }
+}
+
+.sec-font {
+    font-family: IPixelU;
 }

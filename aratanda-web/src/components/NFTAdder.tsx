@@ -1,18 +1,27 @@
 import React from "react";
-import { Modal, Typography, Box, Input, InputAdornment } from "@mui/material";
+import {
+    Modal,
+    Typography,
+    Box,
+    Input,
+    InputAdornment,
+    colors,
+} from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import { CHANNEL } from "../util/com";
+import { getIPFS } from "../util/IPFS";
+import { COLORS } from "../util/Colors";
 export const NFTAdder = ({
-    open,
+    nft,
     onClose,
 }: {
-    open: boolean;
+    nft: ZoraNFT | null;
     onClose: () => void;
 }) => {
     const style = {
-        backgroundColor: "white",
-        border: "1px solid red",
-        boxShadow: "0 0 1rem 0.25rem #333",
+        backgroundColor: COLORS.PINK,
+        border: "5px solid " + COLORS.GREY,
+        boxShadow: "0 0 1rem 0.25rem " + COLORS.PURPLE,
         width: "75vw",
         minWidth: "20rem",
         marginTop: "10vh",
@@ -30,9 +39,9 @@ export const NFTAdder = ({
         n[CHANNEL.Right] = "";
         n[CHANNEL.Bottom] = "";
     };
-    return (
+    return nft != null ? (
         <Modal
-            open={open}
+            open={nft != null}
             onClose={onClose}
             aria-labelledby="nft-adder"
             aria-describedby="modal-nft-adder"
@@ -50,7 +59,7 @@ export const NFTAdder = ({
                             width: "100%",
                             padding: 16,
                             fontSize: "2rem",
-                            backgroundColor: "#232323",
+                            backgroundColor: COLORS.PURPLE,
                         }}
                     >
                         <Typography
@@ -64,12 +73,39 @@ export const NFTAdder = ({
                         </Typography>
                     </div>
                     <div style={{ width: "100%", minHeight: "40vh" }}>
-                        <Typography variant="h6" component="h2" align="center">
-                            Add
-                        </Typography>
+                        <div
+                            className="d-flex"
+                            style={{
+                                backgroundColor: COLORS.GREY,
+                                padding: "2vh",
+                            }}
+                        >
+                            <img
+                                src={getIPFS(nft.image)}
+                                style={{
+                                    maxHeight: "20vh",
+                                    objectFit: "contain",
+                                }}
+                            />
+                        </div>
+                        <div
+                            className="d-flex start"
+                            style={{
+                                padding: 4,
+                                borderTop: "3px solid " + COLORS.PURPLE,
+                            }}
+                        >
+                            <Typography
+                                variant="h6"
+                                component="h2"
+                                align="center"
+                            >
+                                Add
+                            </Typography>
+                        </div>
                     </div>
                 </Box>
             </div>
         </Modal>
-    );
+    ) : null;
 };

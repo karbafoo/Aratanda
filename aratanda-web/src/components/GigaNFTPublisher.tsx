@@ -1,6 +1,7 @@
 import React from "react";
 import { Modal, Typography, Box, Input, InputAdornment } from "@mui/material";
-export const NFTAdder = ({
+import { COLORS } from "../util/Colors";
+export const GigaNFTPublisher = ({
     open,
     onClose,
 }: {
@@ -36,7 +37,7 @@ export const NFTAdder = ({
                             width: "100%",
                             padding: 16,
                             fontSize: "2rem",
-                            backgroundColor: "#232323",
+                            backgroundColor: COLORS.PURPLE,
                         }}
                     >
                         <Typography

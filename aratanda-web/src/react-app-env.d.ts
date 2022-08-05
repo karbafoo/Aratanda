@@ -7,6 +7,7 @@ type ZoraMedia = {
 
 type ZoraNFT = {
     owner?: string | null;
+    collectionAddress?: string | null;
     tokenId?: string | null;
     image?: ZoraMedia | null;
 };

@@ -35,7 +35,8 @@ export const useGetCollectionNFTs = ({
                 });
                 setColelction(
                     c.tokens.nodes.map((cc) => ({
-                        id: cc.token.tokenId,
+                        collectionAddress: cc.token.collectionAddress,
+                        tokenId: cc.token.tokenId,
                         image: {
                             mediaEncoding: cc.token.image?.mediaEncoding,
                             mimeType: cc.token.image?.mimeType,

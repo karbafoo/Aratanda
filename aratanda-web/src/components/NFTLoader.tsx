@@ -1,6 +1,7 @@
 import { Modal, Typography, Box, Input, InputAdornment } from "@mui/material";
 import React from "react";
 import SearchIcon from "@mui/icons-material/Search";
+import { COLORS } from "../util/Colors";
 export const NFTLoader = ({
     open,
     onClose,
@@ -37,7 +38,7 @@ export const NFTLoader = ({
                             width: "100%",
                             padding: 16,
                             fontSize: "2rem",
-                            backgroundColor: "#232323",
+                            backgroundColor: COLORS.PURPLE,
                         }}
                     >
                         <Typography
