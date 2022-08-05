@@ -1,6 +1,7 @@
-import { Modal, Typography, Box } from "@mui/material";
 import React from "react";
-
+import { Modal, Typography, Box, Input, InputAdornment } from "@mui/material";
+import SearchIcon from "@mui/icons-material/Search";
+import { CHANNEL } from "../util/com";
 export const NFTAdder = ({
     open,
     onClose,
@@ -17,6 +18,18 @@ export const NFTAdder = ({
         marginTop: "10vh",
     };
 
+    const onAdd = () => {
+        const n = [];
+        n[CHANNEL.Address] = "";
+        n[CHANNEL.ID] = "";
+        n[CHANNEL.CropStart] = "";
+        n[CHANNEL.Start] = "";
+        n[CHANNEL.End] = "";
+        n[CHANNEL.Top] = "";
+        n[CHANNEL.Left] = "";
+        n[CHANNEL.Right] = "";
+        n[CHANNEL.Bottom] = "";
+    };
     return (
         <Modal
             open={open}

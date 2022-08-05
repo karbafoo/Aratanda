@@ -1,7 +1,5 @@
-import { Modal, Typography, Box, Input, InputAdornment } from "@mui/material";
 import React from "react";
-import SearchIcon from "@mui/icons-material/Search";
-import { CHANNEL } from "../util/com";
+import { Modal, Typography, Box, Input, InputAdornment } from "@mui/material";
 export const NFTAdder = ({
     open,
     onClose,

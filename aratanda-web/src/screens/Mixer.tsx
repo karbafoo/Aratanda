@@ -2,6 +2,8 @@ import { colors } from "@mui/material";
 import { Box } from "@mui/system";
 import React from "react";
 import { NFTLoader } from "../components/NFTLoader";
+import { useGetCollectionNFTs } from "../hooks/Zora";
+import { getIPFS } from "../util/IPFS";
 export const MixerScreen = () => {
     const [channels, setChannels] = React.useState([[], [], [], []]);
     const [dNFT, setdNFT] = React.useState<number | null>(null);
@@ -84,11 +86,6 @@ const Ruler = () => {
     const drawLine = (x: number, i: number) => {
         //@ts-ignore
         const ctx = canRef?.current?.getContext("2d");
-        console.log(
-            "canRef?.current?.clientWidth",
-            //@ts-ignore
-            canRef?.current?.clientWidth
-        );
 
         ctx.beginPath(); // Start a new path
         ctx.strokeStyle = "black";
@@ -190,6 +187,13 @@ const NFTSelect = ({
     onNFTDragEnd: (i: number) => void;
 }) => {
     const [loaderOpen, setLoaderOpen] = React.useState(false);
+    const [activeAddress, setActiveAddress] = React.useState(
+        "0xbc4ca0eda7647a8ab7c2061c2e118a18a936f13d"
+    );
+    const [loading, nfts] = useGetCollectionNFTs({
+        address: activeAddress,
+    });
+
     const onLoaderOpen = () => {
         setLoaderOpen(true);
     };
@@ -230,15 +234,22 @@ const NFTSelect = ({
             <div
                 style={{
                     display: "flex",
+                    flexWrap: "wrap",
+                    justifyContent: "space-around",
+                    overflow: "auto",
                     flex: 1,
                     width: "100%",
                     backgroundColor: "yellow",
                 }}
             >
-                <NFT
-                    onNFTDragStart={() => onNFTDragStart(0)}
-                    onNFTDragEnd={() => onNFTDragEnd(0)}
-                />
+                {nfts.map((n, i) => (
+                    <NFT
+                        key={"nft" + i}
+                        data={n}
+                        onNFTDragStart={() => onNFTDragStart(0)}
+                        onNFTDragEnd={() => onNFTDragEnd(0)}
+                    />
+                ))}
             </div>
 
             <NFTLoader open={loaderOpen} onClose={onLoaderClose} />
@@ -246,9 +257,11 @@ const NFTSelect = ({
     );
 };
 const NFT = ({
+    data,
     onNFTDragStart,
     onNFTDragEnd,
 }: {
+    data: ZoraNFT;
     onNFTDragStart: () => void;
     onNFTDragEnd: () => void;
 }) => {
@@ -262,8 +275,10 @@ const NFT = ({
     return (
         <div
             style={{
+                marginTop: "1vh",
                 width: "5rem",
-                height: "4rem",
+                minWidth: "5rem",
+                height: "5rem",
                 border: "1px solid cyan",
                 backgroundColor: "grey",
                 cursor: "pointer",
@@ -272,7 +287,10 @@ const NFT = ({
             onDragEnd={onDragEnd}
             draggable
         >
-            NFT
+            <img
+                src={getIPFS(data.image)}
+                style={{ width: "100%", objectFit: "contain" }}
+            />
         </div>
     );
 };
