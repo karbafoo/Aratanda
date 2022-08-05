@@ -1,4 +1,3 @@
-import { colors } from "@mui/material";
 import { Box } from "@mui/system";
 import React from "react";
 import { NFTAdder } from "../components/NFTAdder";
@@ -10,10 +9,12 @@ export const MixerScreen = () => {
     const [channels, setChannels] = React.useState([[], [], [], []]);
     const [dNFT, setdNFT] = React.useState<ZoraNFT | null>(null);
     const [dsNFT, setdsNFT] = React.useState<ZoraNFT | null>(null);
+    const [dsChannel, setdsChannel] = React.useState<number | null>(null);
 
     const onNFTDrop = (i: number) => {
         console.log("onNFTDrop", i, dNFT);
         setdsNFT(dNFT);
+        setdsChannel(i);
     };
     const onNFTDragStart = (i: ZoraNFT) => {
         setdNFT(i);
@@ -23,9 +24,12 @@ export const MixerScreen = () => {
         console.log("onNFTDragEnd", null);
         setdNFT(null);
     };
-
+    const onUpdateChannel = (c: any[]) => {
+        console.log("update channel ", dsChannel, c);
+    };
     const onCloseAdder = () => {
         setdsNFT(null);
+        setdsChannel(null);
     };
     return (
         <div
@@ -83,7 +87,11 @@ export const MixerScreen = () => {
                     />
                 ))}
             </div>
-            <NFTAdder nft={dsNFT} onClose={onCloseAdder} />
+            <NFTAdder
+                nft={dsNFT}
+                onClose={onCloseAdder}
+                onUpdate={onUpdateChannel}
+            />
         </div>
     );
 };
@@ -244,7 +252,18 @@ const NFTSelect = ({
                 >
                     NFT Select
                 </h3>
-                <button onClick={onLoaderOpen}>ADD</button>
+                <button
+                    onClick={onLoaderOpen}
+                    style={{
+                        backgroundColor: COLORS.PINK,
+                        color: COLORS.PURPLE,
+                        boxShadow: "0 0 4px 1px " + COLORS.PINK,
+                        textShadow: "1px 0 1px #222",
+                        borderColor: COLORS.PURPLE,
+                    }}
+                >
+                    ADD
+                </button>
             </div>
             <div
                 style={{
@@ -325,7 +344,7 @@ const NFT = ({
                 backgroundColor: "grey",
                 cursor: "pointer",
                 position: "relative",
-                boxShadow: "1px 1px 4px 1px black",
+                boxShadow: "1px 1px 4px 2px " + COLORS.PURPLE,
             }}
             onDragStart={onDragStart}
             onDragEnd={onDragEnd}
