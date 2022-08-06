@@ -6,7 +6,8 @@ import { useGetCollectionNFTs } from "../hooks/Zora";
 import { COLORS } from "../util/Colors";
 import { getIPFS } from "../util/IPFS";
 export const MixerScreen = () => {
-    const [channels, setChannels] = React.useState([[], [], [], []]);
+    const [channels, setChannels] = React.useState<any[][]>([[], [], [], []]);
+    const [channelNFTs, setChannelNFTs] = React.useState<ZoraNFT[]>([]);
     const [dNFT, setdNFT] = React.useState<ZoraNFT | null>(null);
     const [dsNFT, setdsNFT] = React.useState<ZoraNFT | null>(null);
     const [dsChannel, setdsChannel] = React.useState<number | null>(null);
@@ -26,6 +27,14 @@ export const MixerScreen = () => {
     };
     const onUpdateChannel = (c: any[]) => {
         console.log("update channel ", dsChannel, c);
+        if (dsChannel != null && dsNFT != null) {
+            const cc = channels;
+            cc[dsChannel] = c;
+            setChannels([...cc]);
+            const cn = channelNFTs;
+            cn[dsChannel] = dsNFT;
+            setChannelNFTs([...cn]);
+        }
     };
     const onCloseAdder = () => {
         setdsNFT(null);
@@ -187,12 +196,40 @@ const GigaNFT = () => {
             style={{
                 display: "flex",
                 flexDirection: "column",
-                border: "1px solid black",
+                border: "1px solid " + COLORS.PINK,
                 height: "100%",
                 width: "100%",
             }}
         >
-            {" "}
+            <div
+                style={{
+                    display: "flex",
+                    width: "100%",
+                    padding: 8,
+                    borderBottom: "1px solid black",
+                    backgroundColor: COLORS.PURPLE,
+                }}
+            >
+                <h3
+                    style={{
+                        fontSize: 14,
+                        flex: 1,
+                        textAlign: "left",
+                        color: "white",
+                    }}
+                >
+                    Product
+                </h3>
+            </div>
+            <div
+                style={{
+                    flex: 1,
+                    display: "flex",
+                    width: "100%",
+                    backgroundColor: COLORS.PINK,
+                    borderBottom: "1px solid black",
+                }}
+            ></div>
         </div>
     );
 };
@@ -336,10 +373,10 @@ const NFT = ({
     return (
         <div
             style={{
-                marginTop: "1vh",
-                width: "5rem",
-                minWidth: "5rem",
-                height: "5rem",
+                margin: "0.25vw",
+                width: "6rem",
+                minWidth: "6rem",
+                height: "6rem",
                 border: " 1px solid white",
                 backgroundColor: "grey",
                 cursor: "pointer",
