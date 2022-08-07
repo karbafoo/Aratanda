@@ -1,12 +1,17 @@
 import subprocess
 import pathlib
+import sys
+import os
+basepath = f'{pathlib.Path(__file__).parent.as_posix()}/media'
 
-basepath = f'"{pathlib.Path().resolve().as_posix()}"'
 
-
-def joinAudioAndVideo(filename, ss=0, t=30):
-    command = "ffmpeg -i video.mp4 -i audio.wav -c:v copy -c:a aac output.mp4"
+def joinAudioAndVideo(filename):
+    op = f'"{basepath}/{filename}/output.mp4"'
+    ap = f'"{basepath}/{filename}/a/{filename}.aac"'
+    vp = f'"{basepath}/{filename}/v/{filename}.avi"'
+    command = "ffmpeg -y -i "+vp+" -i "+ap+" -c:v copy -c:a aac "+op
     subprocess.call(command, shell=True)
 
 
-# joinAudioAndVideo("test")
+if __name__ == '__main__':
+    joinAudioAndVideo(sys.argv[2])

@@ -28,8 +28,10 @@ def resizeToMax(img):
 def createVideoFromImage(pathToFile, ss=0, t=30):
     if len(pathToFile) < 1:
         raise ValueError('Path required')
+    print(pathToFile)
     name = pathToFile.split(".")[0].split("/")[1]
     pathToFile = basepath + "/" + pathToFile
+    print(pathToFile)
     d = t - ss
     img = cv2.imread(pathToFile)
     sImg = resizeToMax(img)
@@ -38,7 +40,7 @@ def createVideoFromImage(pathToFile, ss=0, t=30):
     if not os.path.exists(dir):
         os.makedirs(dir)
     out = cv2.VideoWriter(
-        f"{dir}{name}-{ss}-{t}.avi", fourcc, 1 / d, (frame_width, frame_height))
+        f"{dir}{name}.avi", fourcc, 1 / d, (frame_width, frame_height))
     out.write(sImg)
     out.release()
 
