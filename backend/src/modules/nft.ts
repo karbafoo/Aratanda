@@ -30,44 +30,13 @@ enum CHANNEL {
     Right,
     Bottom,
 }
-// const n = 106898612;
-// const temp = [
-//     [],
-//     [
-//         "0xbc4ca0eda7647a8ab7c2061c2e118a18a936f13d",
-//         "1",
-//         1,
-//         0,
-//         0,
-//         0,
-//         30000,
-//         0,
-//         0,
-//         100,
-//         100,
-//     ],
-//     [
-//         "0xbc4ca0eda7647a8ab7c2061c2e118a18a936f13d",
-//         "1",
-//         0,
-//         1,
-//         0,
-//         0,
-//         30000,
-//         0,
-//         0,
-//         100,
-//         100,
-//     ],
-//     [],
-//     [],
-// ];
+
 export const CompileChannels = (channels: any[]) => {
     return new Promise(async (resolve, reject) => {
         try {
             const r = Math.floor(Math.random() * 1e10);
             const sc = sortByStart(channels);
-            const metas = (
+            let m = (
                 await Promise.all(
                     sc.map((c) =>
                         c[CHANNEL.Address]
@@ -80,7 +49,16 @@ export const CompileChannels = (channels: any[]) => {
                             : null
                     )
                 )
-            ).map((t) => t?.token?.token);
+            ).map((t) => t?.token);
+
+            let metas = m.map((t) => {
+                console.log("t?.token", t);
+                return {
+                    image: t?.token.content?.mimeType?.startsWith("audio")
+                        ? t?.token.content
+                        : t?.token?.image,
+                };
+            });
             // console.log("metas", metas);
             const saved = await Promise.all(
                 metas.map(
@@ -171,6 +149,7 @@ export const CompileChannels = (channels: any[]) => {
             console.log("GIGA FINISHED");
             resolve({ name: r.toString() });
         } catch (err) {
+            console.log("GIGA err", err);
             reject(err);
         }
     });
@@ -245,6 +224,9 @@ const finishGigaNFT = async (name: string, t: "join" | "video" = "join") => {
 const downloadStuff = (uri: string, ex: string, f: string, i: number) => {
     return new Promise(async (resolve, reject) => {
         console.log("uri", uri);
+        if (!uri) {
+            return resolve(null);
+        }
         axios({
             method: "get",
             url: uri,
@@ -271,6 +253,6 @@ const getEx = (mime: string) => {
         : mime.startsWith("video")
         ? "mp4"
         : mime.startsWith("audio")
-        ? "mp3"
+        ? "mp4"
         : "";
 };

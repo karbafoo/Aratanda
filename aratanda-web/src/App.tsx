@@ -5,7 +5,7 @@ import { MixerScreen } from "./screens/Mixer";
 import { COLORS } from "./util/Colors";
 import { MainScreen } from "./screens/Main";
 import { TempalteSelect } from "./screens/TemplateSelect";
-import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 const theme = createTheme({
     typography: {
         fontFamily: [

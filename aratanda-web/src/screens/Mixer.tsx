@@ -1,5 +1,6 @@
 import { Box } from "@mui/system";
 import React from "react";
+import { Loading } from "../components/Loading";
 import { NFT } from "../components/NFT";
 import { NFTAdder } from "../components/NFTAdder";
 import { NFTLoader } from "../components/NFTLoader";
@@ -295,6 +296,11 @@ const GigaNFT = ({
     onCompile: () => void;
     vid: string;
 }) => {
+    const videoRef = React.useRef(null);
+    React.useEffect(() => {
+        //@ts-ignore
+        videoRef.current?.load();
+    }, [vid]);
     return (
         <div
             style={{
@@ -347,6 +353,7 @@ const GigaNFT = ({
                 }}
             >
                 <video
+                    ref={videoRef}
                     style={{
                         width: "100%",
                         height: "340px",
@@ -377,7 +384,7 @@ const NFTSelect = ({
     const [loading, nfts] = useGetCollectionNFTs({
         address: activeAddress,
     });
-    console.log("nfts", nfts);
+
     const onLoaderOpen = () => {
         setLoaderOpen(true);
     };
@@ -446,16 +453,20 @@ const NFTSelect = ({
                     borderBottom: "1px solid black",
                 }}
             >
-                {nftList.map((a, i) => (
-                    <TabItem
-                        key={"lnftlist" + i}
-                        address={a}
-                        style={{
-                            ...isActive(a),
-                        }}
-                        onClick={() => setActiveAddress(a)}
-                    />
-                ))}
+                {loading ? (
+                    <Loading />
+                ) : (
+                    nftList.map((a, i) => (
+                        <TabItem
+                            key={"lnftlist" + i}
+                            address={a}
+                            style={{
+                                ...isActive(a),
+                            }}
+                            onClick={() => setActiveAddress(a)}
+                        />
+                    ))
+                )}
             </div>
 
             <div

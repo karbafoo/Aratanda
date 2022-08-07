@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import { COLORS } from "../util/Colors";
 
 export const Navbar = () => {
@@ -38,7 +39,20 @@ export const Navbar = () => {
                     textShadow: "0 1px 1px #aaa",
                 }}
             >
-                {wallet ? <div style={{ fontSize: 10 }}>CREATE</div> : null}
+                {wallet ? (
+                    <Link
+                        style={{
+                            display: "block",
+                            fontSize: 10,
+                            padding: 0,
+                            color: "inherit",
+                            textDecoration: "none",
+                        }}
+                        to={"/create"}
+                    >
+                        CREATE
+                    </Link>
+                ) : null}
             </div>
             <div
                 style={{

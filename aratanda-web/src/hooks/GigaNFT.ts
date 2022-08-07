@@ -26,3 +26,7 @@ export const useGetChannels = (tokenId: number) => {
     }, [tokenId]);
     return [channels, loading, err];
 };
+
+export const MintGigaNFT = (channels: any[][]) => {
+    //TODO
+};

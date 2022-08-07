@@ -29,7 +29,3 @@
 **/build/
 **/reports/
 
-**/*.png
-**/*.avi
-**/*.mp4
-**/*.aac
