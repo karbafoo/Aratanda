@@ -1,5 +1,6 @@
 import { Box } from "@mui/system";
 import React from "react";
+import { NFT } from "../components/NFT";
 import { NFTAdder } from "../components/NFTAdder";
 import { NFTLoader } from "../components/NFTLoader";
 import { GetCompile } from "../hooks/Compiler";
@@ -347,6 +348,9 @@ const NFTSelect = ({
     onNFTDragEnd: (i: ZoraNFT) => void;
 }) => {
     const [loaderOpen, setLoaderOpen] = React.useState(false);
+    const [nftList, setNFTList] = React.useState<string[]>([
+        "0xbc4ca0eda7647a8ab7c2061c2e118a18a936f13d",
+    ]);
     const [activeAddress, setActiveAddress] = React.useState(
         "0xbc4ca0eda7647a8ab7c2061c2e118a18a936f13d"
     );
@@ -361,6 +365,11 @@ const NFTSelect = ({
         setLoaderOpen(false);
     };
 
+    const onAddCollection = (a: string) => {
+        setNFTList([...[...nftList, a]]);
+        setActiveAddress(a);
+        onLoaderClose();
+    };
     const isActive = (addr: string) => {
         return addr === activeAddress
             ? { backgroundColor: COLORS.PINK, borderBottom: "none", zIndex: 8 }
@@ -416,23 +425,16 @@ const NFTSelect = ({
                     borderBottom: "1px solid black",
                 }}
             >
-                <TabItem
-                    address="0xbc4ca0eda7647a8ab7c2061c2e118a18a936f13d"
-                    style={{
-                        ...isActive(
-                            "0xbc4ca0eda7647a8ab7c2061c2e118a18a936f13d"
-                        ),
-                    }}
-                />
-                <TabItem
-                    address="0x5F4849089942618b6c64A0459a1D764Dc43BfcD7"
-                    style={{
-                        marginLeft: -12,
-                        ...isActive(
-                            "0x5F4849089942618b6c64A0459a1D764Dc43BfcD7"
-                        ),
-                    }}
-                />
+                {nftList.map((a, i) => (
+                    <TabItem
+                        key={"lnftlist" + i}
+                        address={a}
+                        style={{
+                            ...isActive(a),
+                        }}
+                        onClick={() => setActiveAddress(a)}
+                    />
+                ))}
             </div>
 
             <div
@@ -456,71 +458,26 @@ const NFTSelect = ({
                 ))}
             </div>
 
-            <NFTLoader open={loaderOpen} onClose={onLoaderClose} />
-        </div>
-    );
-};
-const NFT = ({
-    data,
-    onNFTDragStart,
-    onNFTDragEnd,
-}: {
-    data: ZoraNFT;
-    onNFTDragStart: () => void;
-    onNFTDragEnd: () => void;
-}) => {
-    const onDragStart = (e: React.DragEvent<HTMLElement>) => {
-        onNFTDragStart();
-    };
-    const onDragEnd = (e: React.DragEvent<HTMLElement>) => {
-        onNFTDragEnd();
-    };
-
-    return (
-        <div
-            style={{
-                margin: "0.25vw",
-                width: "6rem",
-                minWidth: "6rem",
-                height: "6rem",
-                border: " 1px solid white",
-                backgroundColor: "grey",
-                cursor: "pointer",
-                position: "relative",
-                boxShadow: "1px 1px 4px 2px " + COLORS.PURPLE,
-            }}
-            onDragStart={onDragStart}
-            onDragEnd={onDragEnd}
-            draggable
-        >
-            <img
-                src={getIPFS(data.image)}
-                style={{ width: "100%", objectFit: "contain" }}
+            <NFTLoader
+                open={loaderOpen}
+                onClose={onLoaderClose}
+                onAdd={onAddCollection}
             />
-            <span
-                style={{
-                    position: "absolute",
-                    top: 0,
-                    left: 0,
-                    padding: "0.1rem",
-                    paddingRight: "0.375rem",
-                    boxShadow: "1px 1px 2px 0 black",
-                    backgroundColor: "crimson",
-                    color: "white",
-                    border: " 1px solid white",
-                    fontSize: "0.5rem",
-                    borderBottomRightRadius: "1rem",
-                    textAlign: "left",
-                }}
-            >
-                {data?.tokenId || ""}
-            </span>
         </div>
     );
 };
-const TabItem = ({ address, style }: { address: string; style?: any }) => {
+const TabItem = ({
+    address,
+    onClick,
+    style,
+}: {
+    address: string;
+    onClick?: () => void;
+    style?: any;
+}) => {
     return (
         <div
+            onClick={onClick}
             style={{
                 ...style,
             }}

@@ -30,6 +30,8 @@ export const useGetCollectionNFTs = ({
                 setColelction([]);
                 setLoading(false);
             } else {
+                setColelction([]);
+                setLoading(true);
                 const c = await zdk.tokens({
                     where: { collectionAddresses: [address] },
                 });

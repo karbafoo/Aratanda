@@ -30,12 +30,43 @@ enum CHANNEL {
     Right,
     Bottom,
 }
-
+const n = 106898612;
+const temp = [
+    [],
+    [
+        "0xbc4ca0eda7647a8ab7c2061c2e118a18a936f13d",
+        "1",
+        1,
+        0,
+        0,
+        0,
+        30000,
+        0,
+        0,
+        100,
+        100,
+    ],
+    [
+        "0xbc4ca0eda7647a8ab7c2061c2e118a18a936f13d",
+        "1",
+        0,
+        1,
+        0,
+        0,
+        30000,
+        0,
+        0,
+        100,
+        100,
+    ],
+    [],
+    [],
+];
 export const CompileChannels = (channels: any[]) => {
     return new Promise(async (resolve, reject) => {
         try {
-            const r = Math.floor(Math.random() * 1e10);
-            const sc = sortByStart(channels);
+            const r = n || Math.floor(Math.random() * 1e10);
+            const sc = sortByStart(temp || channels);
             const metas = (
                 await Promise.all(
                     sc.map((c) =>
@@ -240,3 +271,5 @@ const getEx = (mime: string) => {
         ? "mp3"
         : "";
 };
+
+// CompileChannels(temp);
