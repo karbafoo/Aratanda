@@ -50,6 +50,9 @@ export const POST = <T>(route: string, body: any): Promise<T> => {
     });
 };
 
+export const GetCompiledVid = (name: string) => {
+    return BASE_URL + "compiled/" + name;
+};
 export const handleHttpError = (res: any) => {
     return new Error("ERRRRRRRR handler");
 };

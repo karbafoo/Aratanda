@@ -3,7 +3,9 @@ import { Box, Container, createTheme, ThemeProvider } from "@mui/material";
 import "./App.scss";
 import { MixerScreen } from "./screens/Mixer";
 import { COLORS } from "./util/Colors";
-
+import { MainScreen } from "./screens/Main";
+import { TempalteSelect } from "./screens/TemplateSelect";
+import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 const theme = createTheme({
     typography: {
         fontFamily: [
@@ -29,7 +31,18 @@ const App = () => {
                     }}
                 >
                     <Box sx={{ height: "100%" }}>
-                        <MixerScreen />
+                        <Routes>
+                            <Route path="/" element={<MainScreen />} />
+                            <Route
+                                path="/create"
+                                element={<TempalteSelect />}
+                            />
+                            <Route
+                                path="/create/:template"
+                                element={<MixerScreen />}
+                            />
+                        </Routes>
+                        <TempalteSelect />
                     </Box>
                 </Container>
             </div>

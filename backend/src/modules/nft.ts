@@ -30,43 +30,43 @@ enum CHANNEL {
     Right,
     Bottom,
 }
-const n = 106898612;
-const temp = [
-    [],
-    [
-        "0xbc4ca0eda7647a8ab7c2061c2e118a18a936f13d",
-        "1",
-        1,
-        0,
-        0,
-        0,
-        30000,
-        0,
-        0,
-        100,
-        100,
-    ],
-    [
-        "0xbc4ca0eda7647a8ab7c2061c2e118a18a936f13d",
-        "1",
-        0,
-        1,
-        0,
-        0,
-        30000,
-        0,
-        0,
-        100,
-        100,
-    ],
-    [],
-    [],
-];
+// const n = 106898612;
+// const temp = [
+//     [],
+//     [
+//         "0xbc4ca0eda7647a8ab7c2061c2e118a18a936f13d",
+//         "1",
+//         1,
+//         0,
+//         0,
+//         0,
+//         30000,
+//         0,
+//         0,
+//         100,
+//         100,
+//     ],
+//     [
+//         "0xbc4ca0eda7647a8ab7c2061c2e118a18a936f13d",
+//         "1",
+//         0,
+//         1,
+//         0,
+//         0,
+//         30000,
+//         0,
+//         0,
+//         100,
+//         100,
+//     ],
+//     [],
+//     [],
+// ];
 export const CompileChannels = (channels: any[]) => {
     return new Promise(async (resolve, reject) => {
         try {
-            const r = n || Math.floor(Math.random() * 1e10);
-            const sc = sortByStart(temp || channels);
+            const r = Math.floor(Math.random() * 1e10);
+            const sc = sortByStart(channels);
             const metas = (
                 await Promise.all(
                     sc.map((c) =>
@@ -164,7 +164,10 @@ export const CompileChannels = (channels: any[]) => {
                 })
             );
             console.log("pas", pas);
-            await finishGigaNFT(r.toString());
+            await finishGigaNFT(
+                r.toString(),
+                pas.filter((a) => a !== null).length ? "join" : "video"
+            );
             console.log("GIGA FINISHED");
             resolve({ name: r.toString() });
         } catch (err) {
@@ -221,11 +224,11 @@ const extractAudio = async (path: string, s: number, t: number) => {
         pythonProcess.on("close", resolve);
     });
 };
-const finishGigaNFT = async (name: string) => {
+const finishGigaNFT = async (name: string, t: "join" | "video" = "join") => {
     console.log("STARTPROCESS", name);
     const pythonProcess = spawn("python", [
         BASE_PYTHON + "/processor.py",
-        "join",
+        t,
         name,
     ]);
     pythonProcess.stdout.on("data", (data) => {
@@ -271,5 +274,3 @@ const getEx = (mime: string) => {
         ? "mp3"
         : "";
 };
-
-// CompileChannels(temp);

@@ -1,9 +1,15 @@
+# @version ^0.3.3
 # @dev Implementation of ERC-721 non-fungible token standard.
 # @author Ryuya Nakamura (@nrryuya)
 # Modified from: https://github.com/vyperlang/vyper/blob/de74722bf2d8718cca46902be165f9fe0e3641dd/examples/tokens/ERC721.vy
 
 from vyper.interfaces import ERC165
 from vyper.interfaces import ERC721
+
+
+interface IERC20:
+    def transferFrom(_from : address, _to : address, _value : uint256) -> bool: nonpayable
+    def balanceOf(account: address) -> uint256: view
 
 implements: ERC721
 implements: ERC165
@@ -52,9 +58,12 @@ event ApprovalForAll:
     operator: indexed(address)
     approved: bool
 
+struct GigaChannel:
+    channels: uint256[11][8]
 
 # @dev Mapping from NFT ID to the address that owns it.
 idToOwner: HashMap[uint256, address]
+idToChannel: HashMap[uint256, GigaChannel]
 
 # @dev Mapping from NFT ID to approved address.
 idToApprovals: HashMap[uint256, address]
@@ -68,7 +77,12 @@ ownerToOperators: HashMap[address, HashMap[address, bool]]
 # @dev Address of minter, who can mint a token
 minter: address
 
+zorang: address
+mintPrice: uint256
+
 baseURL: String[53]
+
+
 
 # @dev Static list of supported ERC165 interface ids
 SUPPORTED_INTERFACES: constant(bytes4[2]) = [
@@ -84,6 +98,7 @@ def __init__():
     @dev Contract constructor.
     """
     self.minter = msg.sender
+    self.mintPrice = 10**20
     self.baseURL = "https://api.babby.xyz/metadata/"
 
 
@@ -123,6 +138,12 @@ def ownerOf(_tokenId: uint256) -> address:
     # Throws if `_tokenId` is not a valid NFT
     assert owner != ZERO_ADDRESS
     return owner
+
+@view
+@external
+def channelsOf(_tokenId: uint256) -> GigaChannel:
+    c: GigaChannel = self.idToChannel[_tokenId]
+    return c
 
 
 @view
@@ -274,10 +295,10 @@ def safeTransferFrom(
     @param _data Additional data with no specified format, sent in call to `_to`.
     """
     self._transferFrom(_from, _to, _tokenId, msg.sender)
-    if _to.is_contract: # check if `_to` is a contract address
-        returnValue: bytes4 = ERC721Receiver(_to).onERC721Received(msg.sender, _from, _tokenId, _data)
-        # Throws if transfer destination is a contract which does not implement 'onERC721Received'
-        assert returnValue == method_id("onERC721Received(address,address,uint256,bytes)", output_type=bytes4)
+    # if _to.is_contract: # check if `_to` is a contract address
+    #     returnValue: bytes4 = ERC721Receiver(_to).onERC721Received(msg.sender, _from, _tokenId, _data)
+    #     # Throws if transfer destination is a contract which does not implement 'onERC721Received'
+    #     assert returnValue == method_id("onERC721Received(address,address,uint256,bytes4)", output_type=bytes32)
 
 
 @external
@@ -323,7 +344,7 @@ def setApprovalForAll(_operator: address, _approved: bool):
 ### MINT & BURN FUNCTIONS ###
 
 @external
-def mint(_to: address, _tokenId: uint256) -> bool:
+def mint(_to: address, _tokenId: uint256, _channels: uint256[11][8]) -> bool:
     """
     @dev Function to mint tokens
          Throws if `msg.sender` is not the minter.
@@ -334,11 +355,14 @@ def mint(_to: address, _tokenId: uint256) -> bool:
     @return A boolean that indicates if the operation was successful.
     """
     # Throws if `msg.sender` is not the minter
-    assert msg.sender == self.minter
+    # assert msg.sender == self.minter
     # Throws if `_to` is zero address
     assert _to != ZERO_ADDRESS
+    assert self.zorang != ZERO_ADDRESS
+    IERC20(self.zorang).transferFrom(msg.sender, self, self.mintPrice)
     # Add NFT. Throws if `_tokenId` is owned by someone
     self._addTokenTo(_to, _tokenId)
+    self.idToChannel[_tokenId] = GigaChannel({channels: _channels})
     log Transfer(ZERO_ADDRESS, _to, _tokenId)
     return True
 
@@ -362,7 +386,22 @@ def burn(_tokenId: uint256):
     log Transfer(owner, ZERO_ADDRESS, _tokenId)
 
 
+
+@pure                                            
+@internal                                                         
+def uint2str(digit: uint256) -> String[1]:
+    assert digit < 10  # only works with digits 0-9                           
+    digit_bytes32: bytes32 = convert(digit + 48, bytes32)  # ASCII `0` is 0x30 (48 in decimal)
+    digit_bytes1: Bytes[1] = slice(digit_bytes32, 31, 1)  # Remove padding bytes
+    return convert(digit_bytes1, String[1])  
+    
 @view
 @external
 def tokenURI(tokenId: uint256) -> String[132]:
-    return concat(self.baseURL, uint2str(tokenId))
+    return concat(self.baseURL, self.uint2str(tokenId))
+
+
+@external
+def setZorang(a: address):
+    assert msg.sender == self.minter
+    self.zorang = a

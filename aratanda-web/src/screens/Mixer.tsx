@@ -7,6 +7,7 @@ import { GetCompile } from "../hooks/Compiler";
 import { useGetCollectionNFTs } from "../hooks/Zora";
 import { COLORS } from "../util/Colors";
 import { CHANNEL } from "../util/com";
+import { GetCompiledVid } from "../util/http";
 import { getIPFS } from "../util/IPFS";
 export const MixerScreen = () => {
     const [channels, setChannels] = React.useState<any[][]>([[], [], [], []]);
@@ -14,6 +15,7 @@ export const MixerScreen = () => {
     const [dNFT, setdNFT] = React.useState<ZoraNFT | null>(null);
     const [dsNFT, setdsNFT] = React.useState<ZoraNFT | null>(null);
     const [dsChannel, setdsChannel] = React.useState<number | null>(null);
+    const [currentVId, setCurrentVid] = React.useState<string>("");
     const onNFTDrop = (i: number) => {
         setdsNFT(dNFT);
         setdsChannel(i);
@@ -43,6 +45,7 @@ export const MixerScreen = () => {
         console.log("onCompileGigaNFT");
         try {
             const res = await GetCompile(channels);
+            setCurrentVid(res.name || "");
             console.log("res", res);
         } catch (err) {
             console.log("onCompileGigaNFT error", err);
@@ -83,7 +86,7 @@ export const MixerScreen = () => {
                         backgroundColor: "red",
                     }}
                 >
-                    <GigaNFT onCompile={onCompileGigaNFT} />
+                    <GigaNFT onCompile={onCompileGigaNFT} vid={currentVId} />
                 </Box>
             </div>
             <div
@@ -285,7 +288,13 @@ const ChannelCard = ({ nft, c }: { nft: ZoraNFT; c: any[] }) => {
     );
 };
 
-const GigaNFT = ({ onCompile }: { onCompile: () => void }) => {
+const GigaNFT = ({
+    onCompile,
+    vid,
+}: {
+    onCompile: () => void;
+    vid: string;
+}) => {
     return (
         <div
             style={{
@@ -336,7 +345,18 @@ const GigaNFT = ({ onCompile }: { onCompile: () => void }) => {
                     backgroundColor: COLORS.PINK,
                     borderBottom: "1px solid black",
                 }}
-            ></div>
+            >
+                <video
+                    style={{
+                        width: "100%",
+                        height: "340px",
+                        objectFit: "contain",
+                    }}
+                    controls
+                >
+                    <source src={GetCompiledVid(vid)} type="video/mp4" />
+                </video>
+            </div>
         </div>
     );
 };
@@ -357,7 +377,7 @@ const NFTSelect = ({
     const [loading, nfts] = useGetCollectionNFTs({
         address: activeAddress,
     });
-
+    console.log("nfts", nfts);
     const onLoaderOpen = () => {
         setLoaderOpen(true);
     };
@@ -381,7 +401,7 @@ const NFTSelect = ({
                 display: "flex",
                 flexDirection: "column",
                 border: "1px solid black",
-                height: "100%",
+                height: "400px",
                 width: "100%",
             }}
         >
@@ -420,6 +440,7 @@ const NFTSelect = ({
             <div
                 style={{
                     display: "flex",
+
                     width: "100%",
                     backgroundColor: COLORS.PINK,
                     borderBottom: "1px solid black",

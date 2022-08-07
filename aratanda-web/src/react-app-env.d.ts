@@ -11,3 +11,7 @@ type ZoraNFT = {
     tokenId?: string | null;
     image?: ZoraMedia | null;
 };
+
+type GigaPost = {
+    id: number;
+};
