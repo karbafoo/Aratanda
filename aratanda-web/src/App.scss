@@ -94,3 +94,7 @@ button {
 .sec-font {
     font-family: IPixelU;
 }
+
+.channel {
+    @extend .d-flex;
+}

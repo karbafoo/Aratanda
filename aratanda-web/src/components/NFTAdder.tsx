@@ -41,6 +41,7 @@ export const NFTAdder = ({
         n[CHANNEL.ID] = nft?.tokenId || 0;
         onUpdate(n);
         onClose();
+        setNE([...defaultN]);
     };
     const updateNE = (i: number, v: number) => {
         ne[i] = v;
@@ -48,8 +49,9 @@ export const NFTAdder = ({
     };
 
     React.useEffect(() => {
-        setNE(defaultN);
+        setNE([...defaultN]);
     }, [nft]);
+
     return nft != null ? (
         <Modal
             open={nft != null}
@@ -127,7 +129,6 @@ export const NFTAdder = ({
                                     }
                                     placeholder="Crop from here if its a video till *End*"
                                     label="Crop From (ms)"
-                                    defaultValue={0}
                                 />
                             </div>
                             <br />
@@ -143,7 +144,6 @@ export const NFTAdder = ({
                                     }
                                     placeholder="Start showing at this time"
                                     label="Start (ms)"
-                                    defaultValue={0}
                                 />
                                 <TextField
                                     type="number"
@@ -156,7 +156,6 @@ export const NFTAdder = ({
                                     }
                                     placeholder="End showing at this time (max 30s)"
                                     label="End (ms)"
-                                    defaultValue={3e4}
                                 />
                             </div>
                             <br />
@@ -172,7 +171,6 @@ export const NFTAdder = ({
                                     }
                                     placeholder="Distance from top"
                                     label="Top (%px)"
-                                    defaultValue={0}
                                 />
                                 <TextField
                                     type="number"
@@ -185,7 +183,6 @@ export const NFTAdder = ({
                                     }
                                     placeholder="Distance from top"
                                     label="Left (%px)"
-                                    defaultValue={0}
                                 />
                             </div>
                             <br />
@@ -201,7 +198,6 @@ export const NFTAdder = ({
                                     }
                                     placeholder="Distance from right"
                                     label="Right (%px)"
-                                    defaultValue={100}
                                 />
                                 <TextField
                                     type="number"
@@ -214,7 +210,6 @@ export const NFTAdder = ({
                                     }
                                     placeholder="Distance from bottom"
                                     label="Bottom (%px)"
-                                    defaultValue={100}
                                 />
                             </div>
                             <br />

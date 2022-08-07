@@ -2,8 +2,10 @@ import { Box } from "@mui/system";
 import React from "react";
 import { NFTAdder } from "../components/NFTAdder";
 import { NFTLoader } from "../components/NFTLoader";
+import { GetCompile } from "../hooks/Compiler";
 import { useGetCollectionNFTs } from "../hooks/Zora";
 import { COLORS } from "../util/Colors";
+import { CHANNEL } from "../util/com";
 import { getIPFS } from "../util/IPFS";
 export const MixerScreen = () => {
     const [channels, setChannels] = React.useState<any[][]>([[], [], [], []]);
@@ -11,27 +13,23 @@ export const MixerScreen = () => {
     const [dNFT, setdNFT] = React.useState<ZoraNFT | null>(null);
     const [dsNFT, setdsNFT] = React.useState<ZoraNFT | null>(null);
     const [dsChannel, setdsChannel] = React.useState<number | null>(null);
-
     const onNFTDrop = (i: number) => {
-        console.log("onNFTDrop", i, dNFT);
         setdsNFT(dNFT);
         setdsChannel(i);
     };
     const onNFTDragStart = (i: ZoraNFT) => {
         setdNFT(i);
-        console.log("onNFTDragStart", i);
+        setdsChannel(null);
     };
     const onNFTDragEnd = () => {
-        console.log("onNFTDragEnd", null);
         setdNFT(null);
     };
     const onUpdateChannel = (c: any[]) => {
-        console.log("update channel ", dsChannel, c);
         if (dsChannel != null && dsNFT != null) {
-            const cc = channels;
+            const cc = JSON.parse(JSON.stringify(channels));
             cc[dsChannel] = c;
             setChannels([...cc]);
-            const cn = channelNFTs;
+            const cn = JSON.parse(JSON.stringify(channelNFTs));
             cn[dsChannel] = dsNFT;
             setChannelNFTs([...cn]);
         }
@@ -39,6 +37,15 @@ export const MixerScreen = () => {
     const onCloseAdder = () => {
         setdsNFT(null);
         setdsChannel(null);
+    };
+    const onCompileGigaNFT = async () => {
+        console.log("onCompileGigaNFT");
+        try {
+            const res = await GetCompile(channels);
+            console.log("res", res);
+        } catch (err) {
+            console.log("onCompileGigaNFT error", err);
+        }
     };
     return (
         <div
@@ -75,7 +82,7 @@ export const MixerScreen = () => {
                         backgroundColor: "red",
                     }}
                 >
-                    <GigaNFT />
+                    <GigaNFT onCompile={onCompileGigaNFT} />
                 </Box>
             </div>
             <div
@@ -91,6 +98,7 @@ export const MixerScreen = () => {
                     <Channel
                         key={i + "c"}
                         channel={c}
+                        nft={channelNFTs[i]}
                         index={i}
                         onNFTDrop={onNFTDrop}
                     />
@@ -124,6 +132,7 @@ const Ruler = () => {
         ctx.textAlign = "center";
         ctx.fillText(i.toString(), x, 12);
     };
+
     React.useEffect(() => {
         let dpi = window.devicePixelRatio;
         //@ts-ignore
@@ -160,10 +169,12 @@ const Ruler = () => {
 };
 const Channel = ({
     channel,
+    nft,
     index,
     onNFTDrop,
 }: {
     channel: number[];
+    nft: ZoraNFT | null;
     index: number;
     onNFTDrop: (i: number) => void;
 }) => {
@@ -174,23 +185,106 @@ const Channel = ({
     const onDragOver = (e: React.DragEvent<HTMLElement>) => {
         e.preventDefault();
     };
+
     return (
         <div
             className="channel"
             style={{
-                border: "1px solid red",
+                border: "1px solid " + COLORS.PINK,
+                borderTopWidth: 4,
                 width: "100%",
                 padding: 8,
                 flex: 1,
+                position: "relative",
             }}
             onDrop={onDrop}
             onDragOver={onDragOver}
         >
-            CHANNEL
+            {nft ? (
+                <ChannelCard nft={nft} c={channel} />
+            ) : (
+                <div style={{ color: COLORS.PINK }}>EMPTY</div>
+            )}
+            <span
+                style={{
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    backgroundColor: COLORS.PINK,
+                    border: "1px solid white",
+                    boxShadow: "2px 2px 4px 0px " + COLORS.PINK,
+                    color: COLORS.PURPLE,
+                    padding: 4,
+                }}
+            >
+                {index + 1}
+            </span>
         </div>
     );
 };
-const GigaNFT = () => {
+
+const ChannelCard = ({ nft, c }: { nft: ZoraNFT; c: any[] }) => {
+    const sStyle = {
+        marginTop: 4,
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+        maxWidth: "80%",
+    };
+    const l = (c[CHANNEL.Start] / 3e4) * 100;
+    const r = 100 - (c[CHANNEL.End] / 3e4) * 100;
+
+    return (
+        <div
+            className="d-flex start"
+            style={{
+                border: "1px solid " + COLORS.GREY,
+                minWidth: "auto",
+                backgroundColor: COLORS.PINK,
+                boxShadow: "2px 2px 4px 0px " + COLORS.GREY,
+                position: "absolute",
+                left: l + "%",
+                right: r + "%",
+                width: "auto",
+            }}
+        >
+            <div
+                style={{
+                    minWidth: "5rem",
+                    width: "5rem",
+                    height: "100%",
+                }}
+            >
+                <img
+                    src={getIPFS(nft.image)}
+                    style={{ width: "100%", objectFit: "contain" }}
+                />
+            </div>
+            <div
+                style={{
+                    flex: 1,
+                    maxWidth: "70%", //TODO FIX flex max width
+                    height: "100%",
+                    padding: "0 1rem",
+                    fontSize: 10,
+                }}
+                className="d-flex start col"
+            >
+                <div style={sStyle}>ID: {c[CHANNEL.ID]}</div>
+                <div style={{ whiteSpace: "nowrap", ...sStyle }}>
+                    Token: {c[CHANNEL.Address]}
+                </div>
+                <div style={sStyle}>
+                    Video: {c[CHANNEL.Video] ? "✔️" : "❌"}
+                </div>
+                <div style={sStyle}>
+                    Audio: {c[CHANNEL.Audio] ? "✔️" : "❌"}
+                </div>
+            </div>
+        </div>
+    );
+};
+
+const GigaNFT = ({ onCompile }: { onCompile: () => void }) => {
     return (
         <div
             style={{
@@ -220,6 +314,18 @@ const GigaNFT = () => {
                 >
                     Product
                 </h3>
+                <button
+                    onClick={onCompile}
+                    style={{
+                        backgroundColor: COLORS.PINK,
+                        color: COLORS.PURPLE,
+                        boxShadow: "0 0 4px 1px " + COLORS.PINK,
+                        textShadow: "1px 0 1px #222",
+                        borderColor: COLORS.PURPLE,
+                    }}
+                >
+                    REPLAY
+                </button>
             </div>
             <div
                 style={{

@@ -3,7 +3,9 @@ import restApi from "./api";
 const fastify = require("fastify")({
     logger: false,
 });
-
+fastify.register(require("@fastify/cors"), {
+    // put your options here
+});
 fastify.register(restApi);
 
 const PORT = process.env.PORT || 4442;

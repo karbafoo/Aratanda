@@ -2,6 +2,7 @@ import React from "react";
 import { Box, Container, createTheme, ThemeProvider } from "@mui/material";
 import "./App.scss";
 import { MixerScreen } from "./screens/Mixer";
+import { COLORS } from "./util/Colors";
 
 const theme = createTheme({
     typography: {
@@ -20,7 +21,12 @@ const App = () => {
             <div className="App">
                 <Container
                     maxWidth="lg"
-                    sx={{ border: "3px solid red", p: 4, height: "100%" }}
+                    sx={{
+                        border: "3px solid " + COLORS.PURPLE,
+                        p: 4,
+                        height: "100%",
+                        backgroundColor: COLORS.PURK,
+                    }}
                 >
                     <Box sx={{ height: "100%" }}>
                         <MixerScreen />
