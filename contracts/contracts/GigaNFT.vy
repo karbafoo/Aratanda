@@ -24,6 +24,10 @@ interface ERC721Receiver:
         ) -> bytes4: view
 
 
+event Post:
+    sender: indexed(address)
+    tokenId: indexed(uint256)
+    tag: indexed(bytes32)
 # @dev Emits when ownership of any NFT changes by any mechanism. This event emits when NFTs are
 #      created (`from` == 0) and destroyed (`to` == 0). Exception: during contract creation, any
 #      number of NFTs may be created and assigned without emitting Transfer. At the time of any
@@ -64,6 +68,7 @@ struct GigaChannel:
 # @dev Mapping from NFT ID to the address that owns it.
 idToOwner: HashMap[uint256, address]
 idToChannel: HashMap[uint256, GigaChannel]
+idToTag: HashMap[uint256, bytes32]
 
 # @dev Mapping from NFT ID to approved address.
 idToApprovals: HashMap[uint256, address]
@@ -77,8 +82,8 @@ ownerToOperators: HashMap[address, HashMap[address, bool]]
 # @dev Address of minter, who can mint a token
 minter: address
 
-zorang: address
-mintPrice: uint256
+zorang: public(address)
+mintPrice: public(uint256)
 
 baseURL: String[53]
 
@@ -143,6 +148,12 @@ def ownerOf(_tokenId: uint256) -> address:
 @external
 def channelsOf(_tokenId: uint256) -> GigaChannel:
     c: GigaChannel = self.idToChannel[_tokenId]
+    return c
+
+@view
+@external
+def tagOf(_tokenId: uint256) -> bytes32:
+    c: bytes32 = self.idToTag[_tokenId]
     return c
 
 
@@ -344,7 +355,7 @@ def setApprovalForAll(_operator: address, _approved: bool):
 ### MINT & BURN FUNCTIONS ###
 
 @external
-def mint(_to: address, _tokenId: uint256, _channels: uint256[11][8]) -> bool:
+def mint(_to: address, _tokenId: uint256, _channels: uint256[11][8], _tag: bytes32) -> bool:
     """
     @dev Function to mint tokens
          Throws if `msg.sender` is not the minter.
@@ -362,7 +373,9 @@ def mint(_to: address, _tokenId: uint256, _channels: uint256[11][8]) -> bool:
     IERC20(self.zorang).transferFrom(msg.sender, self, self.mintPrice)
     # Add NFT. Throws if `_tokenId` is owned by someone
     self._addTokenTo(_to, _tokenId)
+    self.idToTag[_tokenId] = _tag
     self.idToChannel[_tokenId] = GigaChannel({channels: _channels})
+    log Post(_to, _tokenId, _tag)
     log Transfer(ZERO_ADDRESS, _to, _tokenId)
     return True
 
